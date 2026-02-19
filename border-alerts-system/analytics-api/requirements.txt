@@ -1,6 +1,5 @@
 fastapi
 uvicorn
 pymongo
-kafka-python
 redis
-python-multipart
+motor
