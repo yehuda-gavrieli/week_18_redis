@@ -2,7 +2,6 @@ import json
 from mongo_connection import get_mongo_client
 from redis_connection import get_redis_client
 
-
 db = get_mongo_client()
 cache = get_redis_client()
 TTL = 300 
@@ -43,11 +42,12 @@ def get_top_zones_rgent():
 
 def get_distance_distribution():
     pipeline = [
-        {"$bucket": {
+        {"$group": {
             "groupBy": "$distance_from_fence_m",
-            "boundaries": [0,300, 800, 1500],
-            "default": "Far",
-            "output": {"count": {"$sum": 1}}
+            "boundaries": [0, 300, 800, 1500],
+            "close": {"count": {"$sum": 1}},
+            "medium": {"count": {"$sum": 1}},
+            "far": {"count": {"$sum": 1}}
         }}
     ]
     return get_cached_or_query("distance_distribution", pipeline)
@@ -56,8 +56,8 @@ def get_distance_distribution():
 
 def get_low_visibility_high_activity():
     pipeline = [
-        {"$match": {"visibility_quality": {"$lt": 0.4}, "people_count": {"$gt": 2}}},
-        {"$group": {"_id": "$zone", "alert_count": {"$sum": 1}}}
+        {"$match": {"visibility_quality": {"$lt": 0.51}, "people_count": {"$gt": 2}}},
+        {"$group": {"_id": "$zone", "alert_count": {"$sum": 1},"avg_people_count": {"$avg": "$people_count"}}}
     ]
     return get_cached_or_query("low_visibility_high_activity", pipeline)
 
@@ -71,6 +71,6 @@ def get_hot_zones():
             "urgent_count": {"$sum": 1},
             "avg_distance": {"$avg": "$distance_from_fence_m"}
         }},
-        {"$match": {"urgent_count": {"$gt": 3}, "avg_distance": {"$lt": 100}}}
+        {"$match": {"urgent_count": {"$gt": 3}, "avg_distance": {"$lt": 150}}}
     ]
     return get_cached_or_query("hot_zones", pipeline)
