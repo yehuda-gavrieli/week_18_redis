@@ -1,0 +1,26 @@
+services:
+  redis:
+    image: redis:7-alpine
+  mongodb:
+    image: mongo:latest
+
+  producer:
+    build: ./producer
+    depends_on:
+      - redis
+    volumes:
+      - ./data:/app/data
+
+  consumer:
+    build: ./consumer
+    depends_on:
+      - redis
+      - mongodb
+
+  analytics-api:
+    build: ./analytics-api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - mongodb
