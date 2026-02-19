@@ -1,4 +1,3 @@
-from main import *
 
 def calculate_priority(alert):
     if alert.get("weapons_count", 0) > 0:

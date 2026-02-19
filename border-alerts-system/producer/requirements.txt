@@ -3,6 +3,4 @@ uvicorn
 pymongo
 kafka-python
 redis
-motor
-kafka-python
-python-multipart
+

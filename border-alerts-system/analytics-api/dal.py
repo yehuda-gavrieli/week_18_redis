@@ -2,6 +2,7 @@ import json
 from mongo_connection import get_mongo_client
 from redis_connection import get_redis_client
 
+
 db = get_mongo_client()
 cache = get_redis_client()
 TTL = 300 
@@ -27,6 +28,8 @@ def get_alerts_border_and_priority():
     ]
     return get_cached_or_query("alerts_border_and_priority", pipeline)
 
+
+
 def get_top_zones_rgent():
     pipeline = [
         {"$match": {"priority": "URGENT"}},
@@ -36,16 +39,20 @@ def get_top_zones_rgent():
     ]
     return get_cached_or_query("get_top_zones_rgent", pipeline)
 
+
+
 def get_distance_distribution():
     pipeline = [
         {"$bucket": {
             "groupBy": "$distance_from_fence_m",
-            "boundaries": [0, 50, 150, 1000],
+            "boundaries": [0,300, 800, 1500],
             "default": "Far",
             "output": {"count": {"$sum": 1}}
         }}
     ]
     return get_cached_or_query("distance_distribution", pipeline)
+
+
 
 def get_low_visibility_high_activity():
     pipeline = [
@@ -53,6 +60,8 @@ def get_low_visibility_high_activity():
         {"$group": {"_id": "$zone", "alert_count": {"$sum": 1}}}
     ]
     return get_cached_or_query("low_visibility_high_activity", pipeline)
+
+
 
 def get_hot_zones():
     pipeline = [

@@ -6,7 +6,7 @@ from mongo_connection import *
 
 def run_consumer():
     while True:
-        data = r.blpop(["urgent_queue", "normal_queue"], timeout=0)
+        data = r.blpop(["urgent_queue", "normal_queue"])
         if data:
             alert = json.loads(data[1])
             alert["insertion_time"] = datetime.datetime.now().isoformat()
